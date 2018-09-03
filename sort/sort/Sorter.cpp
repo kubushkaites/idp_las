@@ -113,7 +113,7 @@ void Sorter::removeAdditionalFiles(const uint32_t amountOfFiles)
 {
 	for (uint32_t i = 0; i < amountOfFiles; i++)
 	{
-		try 
+		try
 		{
 			if (std::remove(mAdditionalFilesNames.front().c_str()) != 0) {
 				std::string errorMsg = "Error removing file : " + mAdditionalFilesNames.front();
@@ -218,12 +218,10 @@ void Sorter::mergePartsHelper(const uint32_t indexFirst, const uint32_t indexSec
 	}
 	catch (std::exception& ex)
 	{
-		{
-			std::lock_guard<std::mutex> lock(mAdditionalFilesMtx);
-			mMergingAborted = true;
-			mFileFailures.push_back(ex.what());
-			return;
-		}
+		std::lock_guard<std::mutex> lock(mAdditionalFilesMtx);
+		mMergingAborted = true;
+		mFileFailures.push_back(ex.what());
+		return;
 	}
 }
 
@@ -384,13 +382,13 @@ bool Sorter::isSorted(std::fstream & file, const uint32_t maxCheckBufferSize)
 	FileUtils::resetFilePosition(file);
 
 	uint32_t lastInBuffer = 0, idx = 0, partsAmount = fileSize / maxCheckBufferSize;
-	bool isSorted = true, compareWithLast = false;
-	if (fileSize < maxCheckBufferSize) 
+	bool isSorted = true;
+	if (fileSize < maxCheckBufferSize)
 	{
 		std::vector<uint32_t> vec(fileSize / sizeof(uint32_t));
 		isSorted = std::is_sorted(vec.begin(), vec.end());
 	}
-	else 
+	else
 	{
 		while (idx < partsAmount)
 		{
