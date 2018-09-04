@@ -381,29 +381,34 @@ bool Sorter::isSorted(std::fstream & file, const uint32_t maxCheckBufferSize)
 	FileUtils::getFileSize(file, fileSize);
 	FileUtils::resetFilePosition(file);
 
-	uint32_t lastInBuffer = 0, idx = 0, partsAmount = fileSize / maxCheckBufferSize;
-	bool isSorted = true;
+	uint32_t lastInBuffer = 0, iterationNumber = 0;
+	bool isSorted = true, stopChecking = false;
 	if (fileSize < maxCheckBufferSize)
 	{
-		std::vector<uint32_t> vec(fileSize / sizeof(uint32_t));
+		std::vector<uint32_t> vec(fileSize/sizeof(uint32_t));
+		size_t bytesRead = FileUtils::readData<uint32_t>(file, vec, vec.size());
 		isSorted = std::is_sorted(vec.begin(), vec.end());
 	}
 	else
 	{
-		while (idx < partsAmount)
+		while (true)
 		{
 			std::vector<uint32_t> vec(maxCheckBufferSize / sizeof(uint32_t));
-			FileUtils::readData<uint32_t>(file, vec, maxCheckBufferSize);
+			size_t bytesRead = FileUtils::readData<uint32_t>(file, vec, maxCheckBufferSize);
+			if (bytesRead == 0)
+				break;
+			if(bytesRead < maxCheckBufferSize)
+				vec.resize(bytesRead / sizeof(uint32_t));
 			isSorted = std::is_sorted(vec.begin(), vec.end());
 			if (!isSorted)
 				break;
-			if ((idx > 0 && lastInBuffer > vec.front()))
+			if ((iterationNumber > 0 && lastInBuffer > vec.front()))
 			{
 				isSorted = false;
 				break;
 			}
 			lastInBuffer = vec.back();
-			++idx;
+			++iterationNumber;
 		}
 	}
 	return isSorted;

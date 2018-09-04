@@ -43,7 +43,7 @@ private:
 	uint32_t mPartsAmount = 0;
 	uint32_t mSortedParts = 0;
 	uint32_t mWorkersAmount = 4;
-	uint32_t mMaxRamUsage = 256;
+	uint32_t mMaxRamUsage = 128*1024*1024;
 	size_t mSortingBufferSize = 0;
 
 

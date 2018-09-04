@@ -12,7 +12,7 @@ struct FileUtils
 	static void writeData(std::fstream& file, std::vector<T>& vec, const size_t bytesToWrite);
 
 	template<typename T>
-	static void readData(std::fstream& file, std::vector<T>& vec, const size_t bytesToRead);
+	static size_t readData(std::fstream& file, std::vector<T>& vec, const size_t bytesToRead);
 
 	static void getFileSize(std::fstream& file, uint64_t& out);
 	static void resetFilePosition(std::fstream& file);
@@ -39,7 +39,11 @@ inline void FileUtils::writeData(std::fstream & file, std::vector<T>& vec, const
 }
 
 template<typename T>
-inline void FileUtils::readData(std::fstream & file, std::vector<T>& vec, const size_t bytesToRead)
+inline size_t FileUtils::readData(std::fstream & file, std::vector<T>& vec, const size_t bytesToRead)
 {
 	file.read(reinterpret_cast<char*>(&vec[0]), bytesToRead);
+#ifdef _DEBUG
+	std::cout << "bytesToRead : " << bytesToRead << " ; bytes that has been read : " << file.gcount() << std::endl;
+#endif
+	return file.gcount();
 }
