@@ -17,24 +17,31 @@ void FileUtils::resetFilePosition(std::fstream & file)
 
 void FileUtils::copyContent(std::fstream & fileIn, std::fstream & fileOut, bool copyFullFile)
 {
-	if (copyFullFile)
+	if (copyFullFile) 
+	{
 		resetFilePosition(fileIn);
-	while (true)
+	}
+	
+	auto endOfFileReached = false;
+
+	do 
 	{
 		uint32_t data = 0;
-		readData<uint32_t>(fileIn,data);
-		if (!isEoF(fileIn)) {
+		readData<uint32_t>(fileIn, data);
+		endOfFileReached = isEoF(fileIn);
+		if (!endOfFileReached)
+		{
 			writeData<uint32_t>(fileOut, data);
 		}
-		else
-			break;
-	}
+	} while (!endOfFileReached);
 }
 
 bool FileUtils::isEoF(std::fstream & file)
 {
 	bool isEoF = false;
 	if (file.eof())
+	{
 		isEoF = true;
+	}
 	return isEoF;
 }
